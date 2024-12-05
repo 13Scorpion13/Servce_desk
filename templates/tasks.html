@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обращения</title>
+</head>
+<body>
+    <h1>Обращения</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID Обращения</th>
+                <th>Пользователь</th>
+                <th>Статус</th>
+                <th>Сменить статус</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for task in tasks %}
+            <tr>
+                <td>{{ task.id }}</td>
+                <td>{{ task.user.first_name }} {{ task.user.last_name }}</td>
+                <td>{{ task.status_display }}</td>
+                <td>
+                    <form action="/operator/tasks/{{ task.id }}/status" method="post">
+                        <select name="status">
+                            <option value="открыто" {% if task.status_display == 'открыто' %}selected{% endif %}>Открыто</option>
+                            <option value="в работе" {% if task.status_display == 'в работе' %}selected{% endif %}>В работе</option>
+                            <option value="закрыто" {% if task.status_display == 'закрыто' %}selected{% endif %}>Закрыто</option>
+                        </select>
+                        <button type="submit">Обновить статус</button>
+                    </form>
+                    {% if task.status_display == 'открыто' %}
+                        <form action="/operator/tasks/{{ task.id }}/assign" method="post">
+                            <label for="manager_id">Назначить менеджера:</label>
+                            <select name="manager_id" id="manager_id">
+                                {% for manager in managers %}
+                                    <option value="{{ manager.id }}">{{ manager.id }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit">Взять в работу</button>
+                        </form>
+                    {% endif %}
+
+                    <p>Менеджер: {% if task.manager_id %} {{ task.manager_id }} {% else %} не назначен {% endif %}</p>
+
+                    <br>
+                    <a href="/operator/tasks/{{ task.id }}">Открыть чат по обращению</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
