@@ -1,16 +1,19 @@
 import os
 import uuid
+from environs import Env # для чтения из env файла
 from telegram import Update, Bot
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 )
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from models import Base, User, Task, Message, TaskStatus
+from app.models import Base, User, Task, Message, TaskStatus
 
-API_TOKEN = "7705376397:AAGCDp_mnF0AHB76IxzFsnG9dyizGXjE14A"
+env = Env()  # экземпляр класса Env
+env.read_env() # чтение из файла
+API_TOKEN = env('API_TOKEN') # передача токена
 DATABASE_URL = "sqlite:///./service_desk.db"
-UPLOAD_DIR = "./static/img"
+UPLOAD_DIR = "./app/static/img" # изменен путь
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -31,9 +34,9 @@ async def register_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user = User(telegram_id=telegram_id, first_name=first_name, last_name=last_name)
             session.add(user)
             session.commit()
-            await update.message.reply_text("Вы успешно зарегистрированы! Опишите вашу проблему")
+            await update.message.reply_text("Вы успешно зарегистрированы!")
         else:
-            await update.message.reply_text("Вы уже зарегистрированы. Опишите вашу проблему")
+            await update.message.reply_text("Вы уже зарегистрированы.")
 
 
 async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -49,7 +52,7 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         # Проверка открытых обращений пользователя
         open_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.OPEN).first()
         process_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
-
+        
         if not open_task and not process_task:
             open_task = Task(user_id=user.id)
             session.add(open_task)
@@ -61,8 +64,7 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         if open_task:
             cur_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.OPEN).first()
         elif process_task:
-            cur_task = process_task = session.query(Task).filter_by(user_id=user.id,
-                                                                    status=TaskStatus.IN_PROGRESS).first()
+            cur_task = process_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
 
         if update.message.text:
             new_message = Message(
@@ -72,6 +74,8 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             )
             session.add(new_message)
             session.commit()
+
+
 
 
 async def handle_photo_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -87,7 +91,7 @@ async def handle_photo_message(update: Update, context: ContextTypes.DEFAULT_TYP
         # Проверка открытых обращений пользователя
         open_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.OPEN).first()
         process_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
-
+        
         if not open_task and not process_task:
             open_task = Task(user_id=user.id)
             session.add(open_task)
@@ -99,9 +103,8 @@ async def handle_photo_message(update: Update, context: ContextTypes.DEFAULT_TYP
         if open_task:
             cur_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.OPEN).first()
         elif process_task:
-            cur_task = process_task = session.query(Task).filter_by(user_id=user.id,
-                                                                    status=TaskStatus.IN_PROGRESS).first()
-
+            cur_task = process_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
+            
         if update.message.photo:
             photo = update.message.photo[-1]  # наивысшее разрешение
             file = await photo.get_file()
