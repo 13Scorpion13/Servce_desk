@@ -14,7 +14,7 @@ class TaskStatus(enum.Enum):
 
 # Модель пользователя
 class User(Base):
-    __tablename__ = "users"
+    __table_name__ = "users"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     telegram_id = Column(Integer, unique=True, nullable=False)
@@ -25,7 +25,7 @@ class User(Base):
 
 # Модель менеджера
 class Manager(Base):
-    __tablename__ = "managers"
+    __table_name__ = "managers"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String, nullable=False)
@@ -36,7 +36,7 @@ class Manager(Base):
 
 # Модель обращения
 class Task(Base):
-    __tablename__ = "tasks"
+    __table_name__ = "tasks"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -56,7 +56,7 @@ class Task(Base):
 
 # Модель сообщения
 class Message(Base):
-    __tablename__ = "messages"
+    __table_name__ = "messages"
 
     id = Column(Integer, primary_key=True, index=True)
     task_id = Column(Integer, ForeignKey("tasks.id"))
