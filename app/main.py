@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI, HTTPException, Depends, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.database import get_db, engine, init_db
 from app.models import User, Task, Message, Manager, TaskStatus
