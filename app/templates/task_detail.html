@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обращение {{ task.id }}</title>
+</head>
+<body>
+    <h1>Обращение {{ task.id }}</h1>
+
+    <p><strong>ID обращения:</strong> {{ task.id }}</p>
+    <p><strong>Статус:</strong> {{ task.status_display }}</p>
+    <p><strong>Поступило:</strong> {{ task.open_date }}</p>
+    <p><strong>Завершено:</strong> {% if task.close_date %}{{ task.close_date }}{% else %}не завершено{% endif %}</p>
+
+    <h2>История сообщений</h2>
+    {% if task.messages %}
+        <ul>
+        {% for message in task.messages %}
+            <li>
+                <strong>{{ message.sender }}:</strong> {{ message.content or '[Без текста]' }}
+                {% if message.file_name %}
+                    <br><img src="/static/{{ message.file_name }}" alt="Вложение" width="100">
+                {% endif %}
+                <br><small>{{ message.timestamp }}</small>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Сообщений нет.</p>
+    {% endif %}
+
+    <form action="/operator/tasks/{{ task.id }}/reply" method="POST" enctype="multipart/form-data">
+        <label for="operator_id">ID Оператора:</label><br>
+        <input type="text" name="operator_id" id="operator_id" required><br><br>
+
+        <label for="content">Сообщение:</label><br>
+        <textarea name="content" id="content" rows="4" cols="50"></textarea><br><br>
+
+        <label for="image">Прикрепить файл:</label><br>
+        <input type="file" name="image" id="image"><br><br>
+
+        <input type="submit" value="Ответить">
+    </form>
+</body>
+</html>
