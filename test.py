@@ -40,3 +40,19 @@ def test_create_user(client):
     assert data["first_name"] == "Иван"
     assert data["last_name"] == "Иванов"
 
+def test_get_users(client, db_session):
+    response = client.get("/users")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["telegram_id"] == 12345
+
+
+def test_create_task(client):
+    response = client.post(
+        "/tasks",
+        json={"user_id": 1, "manager_id": 1, "status": "открыто"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "открыто"
