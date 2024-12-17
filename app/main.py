@@ -3,20 +3,20 @@ import os
 from fastapi import FastAPI, HTTPException, Depends, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.database import get_db, engine, init_db
 from app.models import User, Task, Message, Manager, TaskStatus
 from app.schemas import UserCreate, TaskCreate, MessageCreate
 from app.operator_router import router as operator_router
 from datetime import datetime
+from sqlalchemy import select
 from typing import List, Optional
-
 
 app = FastAPI()
 static_dir = "./app/static/img"
 os.makedirs(static_dir, exist_ok=True)
-app.mount("/static", StaticFiles(directory= static_dir), name="static")
+
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 @app.on_event("startup")
@@ -30,6 +30,7 @@ def startup_event():
             break
 
 
+# Основные маршруты
 @app.get("/users", response_model=List[UserCreate])
 def get_users(db: Session = Depends(get_db)):
     result = db.execute(select(User))
@@ -92,7 +93,7 @@ def create_message(message: MessageCreate, file: UploadFile = File(None), db: Se
             sender=message.sender,
             content=message.content
         )
-    
+
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
