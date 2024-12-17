@@ -6,13 +6,11 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-# Статусы обращения
 class TaskStatus(enum.Enum):
     OPEN = "открыто"
     IN_PROGRESS = "в работе"
     CLOSED = "закрыто"
 
-# Модель пользователя
 class User(Base):
     __table_name__ = "users"
     
@@ -23,7 +21,6 @@ class User(Base):
 
     tasks = relationship("Task", back_populates="user")
 
-# Модель менеджера
 class Manager(Base):
     __table_name__ = "managers"
     
@@ -34,7 +31,6 @@ class Manager(Base):
     tasks = relationship("Task", back_populates="manager")
     messages = relationship("Message", back_populates="operator")
 
-# Модель обращения
 class Task(Base):
     __table_name__ = "tasks"
 
@@ -54,7 +50,6 @@ class Task(Base):
     def status_display(self):
         return self.status.value
 
-# Модель сообщения
 class Message(Base):
     __table_name__ = "messages"
 

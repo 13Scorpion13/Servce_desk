@@ -9,11 +9,11 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from app.models import Base, User, Task, Message, TaskStatus
 
-env = Env()  # экземпляр класса Env
-env.read_env() # чтение из файла
-API_TOKEN = env('API_TOKEN') # передача токена
+env = Env()
+env.read_env()
+API_TOKEN = env('API_TOKEN')
 DATABASE_URL = "sqlite:///./service_desk.db"
-UPLOAD_DIR = "./app/static/img" # изменен путь
+UPLOAD_DIR = "./app/static/img"
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -49,7 +49,6 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             await update.message.reply_text("Пожалуйста, сначала выполните команду /start для регистрации.")
             return
 
-        # Проверка открытых обращений пользователя
         open_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.OPEN).first()
         process_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
         
@@ -64,7 +63,7 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         if open_task:
             cur_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.OPEN).first()
         elif process_task:
-            cur_task = process_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
+            cur_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
 
         if update.message.text:
             new_message = Message(
@@ -88,7 +87,6 @@ async def handle_photo_message(update: Update, context: ContextTypes.DEFAULT_TYP
             await update.message.reply_text("Пожалуйста, сначала выполните команду /start для регистрации.")
             return
 
-        # Проверка открытых обращений пользователя
         open_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.OPEN).first()
         process_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
         
@@ -103,7 +101,7 @@ async def handle_photo_message(update: Update, context: ContextTypes.DEFAULT_TYP
         if open_task:
             cur_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.OPEN).first()
         elif process_task:
-            cur_task = process_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
+            cur_task = session.query(Task).filter_by(user_id=user.id, status=TaskStatus.IN_PROGRESS).first()
             
         if update.message.photo:
             photo = update.message.photo[-1]  # наивысшее разрешение
@@ -128,10 +126,8 @@ async def handle_photo_message(update: Update, context: ContextTypes.DEFAULT_TYP
 
 app = ApplicationBuilder().token(API_TOKEN).build()
 
-# Обработчики команд
 app.add_handler(CommandHandler("start", register_user))
 
-# Обработчики сообщений
 app.add_handler(MessageHandler(filters.TEXT, handle_text_message))
 app.add_handler(MessageHandler(filters.PHOTO, handle_photo_message))
 

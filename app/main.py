@@ -14,7 +14,9 @@ from typing import List, Optional
 
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="./app/static/img"), name="static")
+static_dir = "./app/static/img"
+os.makedirs(static_dir, exist_ok=True)
+app.mount("/static", StaticFiles(directory= static_dir), name="static")
 
 
 @app.on_event("startup")

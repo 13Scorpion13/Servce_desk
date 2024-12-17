@@ -18,7 +18,6 @@ router = APIRouter()
 templates = Jinja2Templates(directory="./app/templates")
 
 
-# Просмотр обращения оператором
 @router.get("/tasks", response_class=HTMLResponse)
 def operator_view_tasks(request: Request, db: Session = Depends(get_db)):
     result = db.execute(select(Task).options(joinedload(Task.messages)))
@@ -30,7 +29,6 @@ def operator_view_tasks(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("tasks.html", {"request": request, "tasks": tasks, "managers": managers})
 
 
-# Просмотр подробной информации об обращении
 @router.get("/tasks/{task_id}", response_class=HTMLResponse)
 def get_task_detail(request: Request, task_id: int, db: Session = Depends(get_db)):
     result = db.execute(select(Task).filter(Task.id == task_id).options(joinedload(Task.messages)))
@@ -42,7 +40,6 @@ def get_task_detail(request: Request, task_id: int, db: Session = Depends(get_db
     return templates.TemplateResponse("task_detail.html", {"request": request, "task": task})
 
 
-# Назначение менеджера на обращение
 @router.post("/tasks/{task_id}/assign")
 def assign_manager_to_task(
         task_id: int, 
@@ -62,7 +59,6 @@ def assign_manager_to_task(
     return {"message": f"Обращение {task_id} теперь в работе и назначен менеджер {manager_id}."}
 
 
-# Обновление статуса обращения
 @router.post("/tasks/{task_id}/status")
 def update_task_status(
         task_id: int, 
@@ -85,7 +81,6 @@ def update_task_status(
     return {"message": f"Обращение {task_id} обновлен на статус {status}."}
 
 
-# Ответ на обращение оператором
 @router.post("/tasks/{task_id}/reply") 
 async def reply_to_task(
     task_id: int, 
