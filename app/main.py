@@ -23,12 +23,11 @@ def startup_event():
         k = input("Создать новую базу данных Y/N")
         if k == "Y":
             init_db()
-            return
+            break
         elif k == "N":
-            return
+            break
 
 
-# Основные маршруты
 @app.get("/users", response_model=List[UserCreate])
 def get_users(db: Session = Depends(get_db)):
     result = db.execute(select(User))
@@ -99,5 +98,4 @@ def create_message(message: MessageCreate, file: UploadFile = File(None), db: Se
     return db_message
 
 
-# Подключение маршрутов оператора
 app.include_router(operator_router, prefix="/operator", tags=["operator"])
