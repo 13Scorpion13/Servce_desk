@@ -63,3 +63,4 @@ def test_get_tasks(client, db_session):
     data = response.json()
     assert len(data) == 1
     assert data[0]["status"] == "открыто"
+
