@@ -56,3 +56,10 @@ def test_create_task(client):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "открыто"
+
+def test_get_tasks(client, db_session):
+    response = client.get("/tasks")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["status"] == "открыто"
