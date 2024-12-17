@@ -12,7 +12,7 @@ class TaskStatus(enum.Enum):
     CLOSED = "закрыто"
 
 class User(Base):
-    __table_name__ = "users"
+    __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     telegram_id = Column(Integer, unique=True, nullable=False)
@@ -22,7 +22,7 @@ class User(Base):
     tasks = relationship("Task", back_populates="user")
 
 class Manager(Base):
-    __table_name__ = "managers"
+    __tablename__ = "managers"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String, nullable=False)
@@ -32,7 +32,7 @@ class Manager(Base):
     messages = relationship("Message", back_populates="operator")
 
 class Task(Base):
-    __table_name__ = "tasks"
+    __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -51,7 +51,7 @@ class Task(Base):
         return self.status.value
 
 class Message(Base):
-    __table_name__ = "messages"
+    __tablename__ = "messages"
 
     id = Column(Integer, primary_key=True, index=True)
     task_id = Column(Integer, ForeignKey("tasks.id"))
