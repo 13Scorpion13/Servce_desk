@@ -64,3 +64,8 @@ def test_get_tasks(client, db_session):
     assert len(data) == 1
     assert data[0]["status"] == "открыто"
 
+def test_get_messages_not_found(client):
+    response = client.get("/messages?task_id=1")
+    assert response.status_code == 404
+    data = response.json()
+    assert data["detail"] == "Сообщения для обращения с 1 не найдены"
