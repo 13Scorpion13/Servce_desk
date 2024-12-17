@@ -1,9 +1,11 @@
+import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.database import Base, get_db
 from app.main import app
+from app.models import User, Task, Message
 
 TEST_SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(TEST_SQLALCHEMY_DATABASE_URL, connectargs={"check_same_thread": False})
